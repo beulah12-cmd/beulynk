@@ -77,7 +77,7 @@ class _SignUpPageState extends State<SignUpPage> {
             ? 'volunteer'
             : _selectedRole == UserRole.donor
                 ? 'donor'
-                : 'help_recipient';
+                : 'help_seeker';
 
         final response = await ApiService.register(
           username: _nameController.text.trim(),
@@ -96,8 +96,8 @@ class _SignUpPageState extends State<SignUpPage> {
             String roleText = _selectedRole == UserRole.volunteer
                 ? 'Volunteer'
                 : _selectedRole == UserRole.donor
-                    ? 'Donor'
-                    : 'Help Recipient';
+                ? 'Donor'
+                : 'Help Recipient';
 
             // Show success message
             ScaffoldMessenger.of(context).showSnackBar(
