@@ -6,6 +6,8 @@ import '../widgets/beulynk_logo.dart';
 import '../widgets/custom_buttons.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_footer.dart';
+import '../widgets/loading_overlay.dart';
+import '../services/api_service.dart';
 import 'signup_page.dart';
 import 'forgot_password_page.dart';
 import 'landing_page.dart';
@@ -34,30 +36,60 @@ class _SignInPageState extends State<SignInPage> {
   Future<void> _handleSignIn() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-      
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
-      
-      if (mounted) {
-        setState(() => _isLoading = false);
-        
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Sign in successful!',
-              style: GoogleFonts.inter(),
+
+      try {
+        // Call real API
+        final response = await ApiService.login(
+          username: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+
+        if (mounted) {
+          setState(() => _isLoading = false);
+
+          if (response.success) {
+            // Show success message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Sign in successful!',
+                  style: GoogleFonts.inter(),
+                ),
+                backgroundColor: const Color(0xFFE94560),
+              ),
+            );
+
+            // Navigate to landing page
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const LandingPage()),
+              (route) => false,
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  response.message ?? 'Sign in failed. Please try again.',
+                  style: GoogleFonts.inter(),
+                ),
+                backgroundColor: Colors.redAccent,
+              ),
+            );
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Error: ${e.toString()}',
+                style: GoogleFonts.inter(),
+              ),
+              backgroundColor: Colors.redAccent,
             ),
-            backgroundColor: const Color(0xFFE94560),
-          ),
-        );
-        
-        // Navigate to landing page
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const LandingPage()),
-          (route) => false,
-        );
+          );
+        }
       }
     }
   }
@@ -66,15 +98,18 @@ class _SignInPageState extends State<SignInPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A2E),
-      body: ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _buildHeader(),
-              _buildSignInForm(),
-              const CustomFooter(),
-            ],
+      body: LoadingOverlay(
+        isLoading: _isLoading,
+        child: ScrollConfiguration(
+          behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildHeader(),
+                _buildSignInForm(),
+                const CustomFooter(),
+              ],
+            ),
           ),
         ),
       ),

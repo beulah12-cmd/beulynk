@@ -6,6 +6,8 @@ import '../widgets/beulynk_logo.dart';
 import '../widgets/custom_buttons.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_footer.dart';
+import '../widgets/loading_overlay.dart';
+import '../services/api_service.dart';
 import 'signin_page.dart';
 import 'landing_page.dart';
 
@@ -69,35 +71,76 @@ class _SignUpPageState extends State<SignUpPage> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
 
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
-
-      if (mounted) {
-        setState(() => _isLoading = false);
-
-        String roleText = _selectedRole == UserRole.volunteer
-            ? 'Volunteer'
+      try {
+        // Call real API
+        final role = _selectedRole == UserRole.volunteer
+            ? 'volunteer'
             : _selectedRole == UserRole.donor
-            ? 'Donor'
-            : 'Help Recipient';
+                ? 'donor'
+                : 'help_recipient';
 
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Welcome as a $roleText! Account created successfully.',
-              style: GoogleFonts.inter(),
+        final response = await ApiService.register(
+          username: _nameController.text.trim(),
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+          confirmPassword: _confirmPasswordController.text.trim(),
+          firstName: _nameController.text.trim(),
+          lastName: '',
+          role: role,
+        );
+
+        if (mounted) {
+          setState(() => _isLoading = false);
+
+          if (response.success) {
+            String roleText = _selectedRole == UserRole.volunteer
+                ? 'Volunteer'
+                : _selectedRole == UserRole.donor
+                    ? 'Donor'
+                    : 'Help Recipient';
+
+            // Show success message
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'Welcome as a $roleText! Account created successfully.',
+                  style: GoogleFonts.inter(),
+                ),
+                backgroundColor: const Color(0xFFE94560),
+              ),
+            );
+
+            // Navigate to landing page
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const LandingPage()),
+              (route) => false,
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  response.message ?? 'Registration failed. Please try again.',
+                  style: GoogleFonts.inter(),
+                ),
+                backgroundColor: Colors.redAccent,
+              ),
+            );
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Error: ${e.toString()}',
+                style: GoogleFonts.inter(),
+              ),
+              backgroundColor: Colors.redAccent,
             ),
-            backgroundColor: const Color(0xFFE94560),
-          ),
-        );
-
-        // Navigate to landing page
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const LandingPage()),
-          (route) => false,
-        );
+          );
+        }
       }
     }
   }
@@ -106,15 +149,18 @@ class _SignUpPageState extends State<SignUpPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A2E),
-      body: ScrollConfiguration(
-        behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _buildHeader(),
-              _buildSignUpForm(),
-              const CustomFooter(),
-            ],
+      body: LoadingOverlay(
+        isLoading: _isLoading,
+        child: ScrollConfiguration(
+          behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildHeader(),
+                _buildSignUpForm(),
+                const CustomFooter(),
+              ],
+            ),
           ),
         ),
       ),
