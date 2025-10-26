@@ -124,8 +124,16 @@ REST_FRAMEWORK = {
 }
 
 # CORS settings
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = True  # Allow all for development - change to specific origins in production
 CORS_ALLOW_CREDENTIALS = True
+
+# Specific allowed origins for production (uncomment when frontend is deployed)
+# CORS_ALLOWED_ORIGINS = [
+#     "https://beulynk-frontend.onrender.com",
+#     "https://beulynk.web.app",
+#     "http://localhost:3000",
+#     "http://127.0.0.1:8000",
+# ]
 
 CORS_ALLOW_HEADERS = [
     'accept',
