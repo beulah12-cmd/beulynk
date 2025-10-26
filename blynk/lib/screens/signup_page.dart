@@ -76,8 +76,8 @@ class _SignUpPageState extends State<SignUpPage> {
         final role = _selectedRole == UserRole.volunteer
             ? 'volunteer'
             : _selectedRole == UserRole.donor
-                ? 'donor'
-                : 'help_seeker';
+            ? 'donor'
+            : 'help_seeker';
 
         final response = await ApiService.register(
           username: _nameController.text.trim(),

@@ -21,14 +21,14 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   bool _obscurePassword = true;
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -40,7 +40,7 @@ class _SignInPageState extends State<SignInPage> {
       try {
         // Call real API
         final response = await ApiService.login(
-          username: _emailController.text.trim(),
+          username: _usernameController.text.trim(),
           password: _passwordController.text.trim(),
         );
 
@@ -202,17 +202,14 @@ class _SignInPageState extends State<SignInPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             CustomTextField(
-              controller: _emailController,
-              label: 'Email Address',
-              hint: 'Enter your email',
-              prefixIcon: Icons.email_outlined,
-              keyboardType: TextInputType.emailAddress,
+              controller: _usernameController,
+              label: 'Username or Email',
+              hint: 'Enter your username or email',
+              prefixIcon: Icons.person_outline,
+              keyboardType: TextInputType.text,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter your email';
-                }
-                if (!value.contains('@')) {
-                  return 'Please enter a valid email';
+                  return 'Please enter your username or email';
                 }
                 return null;
               },
