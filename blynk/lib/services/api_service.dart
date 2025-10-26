@@ -38,22 +38,30 @@ class ApiService {
     required String role, // 'volunteer', 'donor', or 'help_seeker'
   }) async {
     try {
+      final url = '${baseUrl}auth/register/';
+      final data = {
+        'username': username,
+        'email': email,
+        'password': password,
+        'confirm_password': confirmPassword,
+        'first_name': firstName,
+        'last_name': lastName,
+        'role': role,
+      };
+
+      print('🔗 POST $url');
+      print('📤 ${jsonEncode(data)}');
+
       final response = await http.post(
-        Uri.parse('$baseUrl/api/auth/register/'),
+        Uri.parse(url),
         headers: await _getHeaders(),
-        body: jsonEncode({
-          'username': username,
-          'email': email,
-          'password': password,
-          'confirm_password': confirmPassword,
-          'first_name': firstName,
-          'last_name': lastName,
-          'role': role,
-        }),
+        body: jsonEncode(data),
       );
 
-      final data = jsonDecode(response.body);
-      final authResponse = AuthResponse.fromJson(data);
+      print('📥 ${response.statusCode} ${response.body}');
+
+      final decodedData = jsonDecode(response.body);
+      final authResponse = AuthResponse.fromJson(decodedData);
 
       // Save auth data if successful
       if (authResponse.success &&
@@ -80,14 +88,22 @@ class ApiService {
     required String password,
   }) async {
     try {
+      final url = '${baseUrl}auth/login/';
+      final data = {'username': username, 'password': password};
+
+      print('🔗 POST $url');
+      print('📤 ${jsonEncode(data)}');
+
       final response = await http.post(
-        Uri.parse('$baseUrl/api/auth/login/'),
+        Uri.parse(url),
         headers: await _getHeaders(),
-        body: jsonEncode({'username': username, 'password': password}),
+        body: jsonEncode(data),
       );
 
-      final data = jsonDecode(response.body);
-      final authResponse = AuthResponse.fromJson(data);
+      print('📥 ${response.statusCode} ${response.body}');
+
+      final decodedData = jsonDecode(response.body);
+      final authResponse = AuthResponse.fromJson(decodedData);
 
       // Save auth data if successful
       if (authResponse.success &&
@@ -111,10 +127,15 @@ class ApiService {
   /// Logout user
   static Future<bool> logout() async {
     try {
+      final url = '${baseUrl}auth/logout/';
+      print('🔗 POST $url');
+
       final response = await http.post(
-        Uri.parse('$baseUrl/api/auth/logout/'),
+        Uri.parse(url),
         headers: await _getHeaders(includeAuth: true),
       );
+
+      print('📥 ${response.statusCode} ${response.body}');
 
       if (response.statusCode == 200) {
         await AuthService.clearAuthData();
@@ -132,10 +153,15 @@ class ApiService {
   /// Get NGO information
   static Future<NGOInfo?> getNGOInfo() async {
     try {
+      final url = '${baseUrl}ngo-info/';
+      print('🔗 GET $url');
+
       final response = await http.get(
-        Uri.parse('$baseUrl/api/ngo-info/'),
+        Uri.parse(url),
         headers: await _getHeaders(),
       );
+
+      print('📥 ${response.statusCode} ${response.body}');
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -158,15 +184,23 @@ class ApiService {
     required String motivation,
   }) async {
     try {
+      final url = '${baseUrl}volunteer/';
+      final data = {
+        'skills': skills,
+        'availability': availability,
+        'motivation': motivation,
+      };
+
+      print('🔗 POST $url');
+      print('📤 ${jsonEncode(data)}');
+
       final response = await http.post(
-        Uri.parse('$baseUrl/api/volunteer/'),
+        Uri.parse(url),
         headers: await _getHeaders(includeAuth: true),
-        body: jsonEncode({
-          'skills': skills,
-          'availability': availability,
-          'motivation': motivation,
-        }),
+        body: jsonEncode(data),
       );
+
+      print('📥 ${response.statusCode} ${response.body}');
 
       return jsonDecode(response.body);
     } catch (e) {
@@ -181,15 +215,23 @@ class ApiService {
     String? message,
   }) async {
     try {
+      final url = '${baseUrl}donor/';
+      final data = {
+        'donation_type': donationType,
+        if (amount != null) 'amount': amount.toString(),
+        if (message != null) 'message': message,
+      };
+
+      print('🔗 POST $url');
+      print('📤 ${jsonEncode(data)}');
+
       final response = await http.post(
-        Uri.parse('$baseUrl/api/donor/'),
+        Uri.parse(url),
         headers: await _getHeaders(includeAuth: true),
-        body: jsonEncode({
-          'donation_type': donationType,
-          if (amount != null) 'amount': amount.toString(),
-          if (message != null) 'message': message,
-        }),
+        body: jsonEncode(data),
       );
+
+      print('📥 ${response.statusCode} ${response.body}');
 
       return jsonDecode(response.body);
     } catch (e) {
@@ -206,16 +248,24 @@ class ApiService {
     required String urgency, // 'low', 'medium', 'high', 'critical'
   }) async {
     try {
+      final url = '${baseUrl}help-request/';
+      final data = {
+        'category': category,
+        'title': title,
+        'description': description,
+        'urgency': urgency,
+      };
+
+      print('🔗 POST $url');
+      print('📤 ${jsonEncode(data)}');
+
       final response = await http.post(
-        Uri.parse('$baseUrl/api/help-request/'),
+        Uri.parse(url),
         headers: await _getHeaders(includeAuth: true),
-        body: jsonEncode({
-          'category': category,
-          'title': title,
-          'description': description,
-          'urgency': urgency,
-        }),
+        body: jsonEncode(data),
       );
+
+      print('📥 ${response.statusCode} ${response.body}');
 
       return jsonDecode(response.body);
     } catch (e) {
@@ -230,11 +280,19 @@ class ApiService {
     required String message,
   }) async {
     try {
+      final url = '${baseUrl}contact/';
+      final data = {'name': name, 'email': email, 'message': message};
+
+      print('🔗 POST $url');
+      print('📤 ${jsonEncode(data)}');
+
       final response = await http.post(
-        Uri.parse('$baseUrl/api/contact/'),
+        Uri.parse(url),
         headers: await _getHeaders(),
-        body: jsonEncode({'name': name, 'email': email, 'message': message}),
+        body: jsonEncode(data),
       );
+
+      print('📥 ${response.statusCode} ${response.body}');
 
       return jsonDecode(response.body);
     } catch (e) {
