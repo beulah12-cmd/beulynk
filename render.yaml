@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: beulynk-backend
+    env: python
+    buildCommand: cd blynk_backend && pip install -r requirements.txt && python manage.py collectstatic --noinput
+    startCommand: cd blynk_backend && gunicorn blynk_backend.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+
