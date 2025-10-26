@@ -1,0 +1,102 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/media
+/staticfiles
+
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+android/.gradle/
+android/app/build/
+ios/.symlinks/
+ios/Pods/
+ios/.generated/
+*.mode1v3
+*.mode2v3
+*.moved-aside
+*.pbxuser
+*.perspectivev3
+Flutter/ephemeral
+Flutter/Flutter.podspec
+Flutter/Flutter.framework
+Flutter/Flutter.pch
+Flutter/Flutter.h
+Flutter/Flutter.xcconfig
+Flutter/Generated.xcconfig
+*.icns
+*.ico
+
+# Android/IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea/
+.gradle/
+*.class
+.externalNativeBuild/
+.cxx/
+local.properties
+.android/
+
+# iOS
+*.app.dSYM.zip
+*.app.dSYM
+profile
+Flutter.xcworkspace/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Coverage
+coverage/
+.coverage
+htmlcov/
+
+# IDEs
+.vs/
+.idea/
+*.swp
+*.swo
+*~
+
