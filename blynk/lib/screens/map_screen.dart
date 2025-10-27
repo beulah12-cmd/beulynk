@@ -78,56 +78,76 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          'Problem Map',
+          style: GoogleFonts.manrope(
+            fontSize: 20.sp,
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _loadApprovedPosts,
+            color: Colors.white,
+          ),
+        ],
+      ),
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(color: Color(0xFFE94560)),
             )
-          : Stack(
-              children: [
-                GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                    target: _initialPosition,
-                    zoom: 10,
+          : Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.map,
+                    size: 80.sp,
+                    color: Colors.white70,
                   ),
-                  markers: _markers,
-                  onMapCreated: (GoogleMapController controller) {
-                    _controller = controller;
-                  },
-                  myLocationButtonEnabled: false,
-                  mapType: MapType.normal,
-                ),
-                // Refresh button
-                Positioned(
-                  top: 50.h,
-                  right: 16.w,
-                  child: FloatingActionButton(
-                    onPressed: _loadApprovedPosts,
-                    backgroundColor: const Color(0xFFE94560),
-                    child: const Icon(Icons.refresh),
+                  SizedBox(height: 16.h),
+                  Text(
+                    'Map View',
+                    style: GoogleFonts.manrope(
+                      fontSize: 24.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                // Info banner
-                if (_posts.isNotEmpty)
-                  Positioned(
-                    bottom: 80.h,
-                    left: 16.w,
-                    right: 16.w,
-                    child: Container(
+                  SizedBox(height: 8.h),
+                  Text(
+                    'Google Maps integration\ncoming soon!',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                      fontSize: 14.sp,
+                      color: Colors.white70,
+                    ),
+                  ),
+                  if (_posts.isNotEmpty) ...[
+                    SizedBox(height: 24.h),
+                    Container(
                       padding: EdgeInsets.all(16.w),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF16213E).withOpacity(0.9),
+                        color: const Color(0xFF16213E).withOpacity(0.6),
                         borderRadius: BorderRadius.circular(12.r),
+                        border: Border.all(color: Colors.white.withOpacity(0.1)),
                       ),
                       child: Text(
-                        '${_posts.length} approved problems on map',
+                        '${_posts.length} approved problem${_posts.length > 1 ? 's' : ''}',
                         style: GoogleFonts.inter(
                           fontSize: 14.sp,
                           color: Colors.white,
                         ),
                       ),
                     ),
-                  ),
-              ],
+                  ],
+                ],
+              ),
             ),
     );
   }
