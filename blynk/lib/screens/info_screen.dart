@@ -25,7 +25,7 @@ class _InfoScreenState extends State<InfoScreen> {
   Future<void> _loadUserProfile() async {
     setState(() => _isLoading = true);
     try {
-      final user = await AuthService.getUser();
+      final user = await AuthService.getCurrentUser();
       setState(() {
         _user = {
           'username': user?.username ?? 'Unknown',
