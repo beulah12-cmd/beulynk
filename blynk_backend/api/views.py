@@ -1,4 +1,4 @@
-from rest_framework import status, generics, permissions
+from rest_framework import status, generics, permissions, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
@@ -7,12 +7,13 @@ from django.contrib.auth.models import User
 
 from .models import (
     UserProfile, NGOInfo, VolunteerRequest,
-    DonorRequest, HelpRequest, ContactMessage
+    DonorRequest, HelpRequest, ContactMessage, Post
 )
 from .serializers import (
     RegisterSerializer, LoginSerializer, UserSerializer,
     UserProfileSerializer, NGOInfoSerializer, VolunteerRequestSerializer,
-    DonorRequestSerializer, HelpRequestSerializer, ContactMessageSerializer
+    DonorRequestSerializer, HelpRequestSerializer, ContactMessageSerializer,
+    PostSerializer
 )
 
 class RegisterView(APIView):
@@ -228,3 +229,22 @@ class ContactMessageView(APIView):
             'success': False,
             'errors': serializer.errors
         }, status=status.HTTP_400_BAD_REQUEST)
+
+class PostViewSet(viewsets.ModelViewSet):
+    """ViewSet for creating and managing posts"""
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    
+    def get_queryset(self):
+        return Post.objects.all().order_by('-created_at')
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class ApprovedPostViewSet(viewsets.ReadOnlyModelViewSet):
+    """Read-only viewset for approved posts (for map)"""
+    serializer_class = PostSerializer
+    permission_classes = [permissions.AllowAny]
+    
+    def get_queryset(self):
+        return Post.objects.filter(is_confirmed=True).order_by('-created_at')

@@ -10,6 +10,7 @@ import '../widgets/loading_overlay.dart';
 import '../services/api_service.dart';
 import 'signin_page.dart';
 import 'landing_page.dart';
+import 'home_screen.dart';
 
 enum UserRole { volunteer, donor, requestHelp }
 
@@ -110,10 +111,10 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
             );
 
-            // Navigate to landing page
+            // Navigate to home screen
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => const LandingPage()),
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
               (route) => false,
             );
           } else {
@@ -442,7 +443,7 @@ class _SignUpPageState extends State<SignUpPage> {
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => const LandingPage()),
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
                   (route) => false,
                 );
               },

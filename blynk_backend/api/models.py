@@ -150,3 +150,22 @@ class ContactMessage(models.Model):
     
     def __str__(self):
         return f"Message from {self.name}"
+
+class Post(models.Model):
+    """User-submitted problem posts with media and location"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    photo = models.ImageField(upload_to='posts/', blank=True, null=True)
+    video = models.FileField(upload_to='posts/videos/', blank=True, null=True)
+    latitude = models.FloatField(blank=True, null=True)
+    longitude = models.FloatField(blank=True, null=True)
+    is_confirmed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.title} - {self.user.username}"

@@ -53,6 +53,16 @@ dependencies:
   
   # Icons
   font_awesome_flutter: ^10.6.0
+  
+  # Maps and location
+  google_maps_flutter: ^2.5.0
+  geolocator: ^10.1.0
+  
+  # Media pickers
+  image_picker: ^1.0.7
+  
+  # Video player
+  video_player: ^2.7.2
 
 dev_dependencies:
   flutter_test:

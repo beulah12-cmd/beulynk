@@ -299,4 +299,116 @@ class ApiService {
       return {'success': false, 'message': 'Network error: ${e.toString()}'};
     }
   }
+
+  /// Get all posts
+  static Future<List<dynamic>> getAllPosts() async {
+    try {
+      final url = '${baseUrl}posts/';
+      print('🔗 GET $url');
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: await _getHeaders(),
+      );
+
+      print('📥 ${response.statusCode} ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data is List) return data;
+      }
+
+      return [];
+    } catch (e) {
+      print('Error fetching posts: $e');
+      return [];
+    }
+  }
+
+  /// Get approved posts only (for map)
+  static Future<List<dynamic>> getApprovedPosts() async {
+    try {
+      final url = '${baseUrl}approved-posts/';
+      print('🔗 GET $url');
+
+      final response = await http.get(
+        Uri.parse(url),
+        headers: await _getHeaders(),
+      );
+
+      print('📥 ${response.statusCode} ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data is List) return data;
+      }
+
+      return [];
+    } catch (e) {
+      print('Error fetching approved posts: $e');
+      return [];
+    }
+  }
+
+  /// Create a new post
+  static Future<Map<String, dynamic>> createPost({
+    required String title,
+    required String description,
+    double? latitude,
+    double? longitude,
+    String? photoPath,
+    String? videoPath,
+  }) async {
+    try {
+      final url = '${baseUrl}posts/';
+
+      // Get auth token
+      final token = await AuthService.getToken();
+
+      var request = http.MultipartRequest('POST', Uri.parse(url));
+
+      if (token != null) {
+        request.headers['Authorization'] = 'Token $token';
+      }
+
+      request.fields['title'] = title;
+      request.fields['description'] = description;
+
+      if (latitude != null) {
+        request.fields['latitude'] = latitude.toString();
+      }
+      if (longitude != null) {
+        request.fields['longitude'] = longitude.toString();
+      }
+
+      // Add photo if provided
+      if (photoPath != null && photoPath.isNotEmpty) {
+        request.files.add(
+          await http.MultipartFile.fromPath('photo', photoPath),
+        );
+      }
+
+      // Add video if provided
+      if (videoPath != null && videoPath.isNotEmpty) {
+        request.files.add(
+          await http.MultipartFile.fromPath('video', videoPath),
+        );
+      }
+
+      print('🔗 POST $url');
+      print('📤 Title: $title');
+      print('📤 Has photo: ${photoPath != null}');
+      print('📤 Has video: ${videoPath != null}');
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      print('📥 ${response.statusCode} ${response.body}');
+
+      return jsonDecode(response.body);
+    } catch (e) {
+      print('Error creating post: $e');
+      return {'success': false, 'message': 'Network error: ${e.toString()}'};
+    }
+  }
 }

@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth.models import User
 from .models import (
     UserProfile, NGOInfo, VolunteerRequest,
-    DonorRequest, HelpRequest, ContactMessage
+    DonorRequest, HelpRequest, ContactMessage, Post
 )
 
 class UserSerializer(serializers.ModelSerializer):
@@ -108,4 +108,13 @@ class ContactMessageSerializer(serializers.ModelSerializer):
         model = ContactMessage
         fields = ['id', 'name', 'email', 'message', 'is_read', 'created_at']
         read_only_fields = ['id', 'is_read', 'created_at']
+
+class PostSerializer(serializers.ModelSerializer):
+    """Serializer for posts"""
+    user = UserSerializer(read_only=True)
+    
+    class Meta:
+        model = Post
+        fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at']
 

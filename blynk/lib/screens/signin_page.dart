@@ -11,6 +11,7 @@ import '../services/api_service.dart';
 import 'signup_page.dart';
 import 'forgot_password_page.dart';
 import 'landing_page.dart';
+import 'home_screen.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({super.key});
@@ -59,10 +60,10 @@ class _SignInPageState extends State<SignInPage> {
               ),
             );
 
-            // Navigate to landing page
+            // Navigate to home screen
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => const LandingPage()),
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
               (route) => false,
             );
           } else {
@@ -295,7 +296,7 @@ class _SignInPageState extends State<SignInPage> {
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => const LandingPage()),
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
                   (route) => false,
                 );
               },
