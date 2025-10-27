@@ -145,10 +145,7 @@ class _SignInPageState extends State<SignInPage> {
                   width: 2,
                 ),
               ),
-              child: const BeulynkLogo.icon(
-                size: 60,
-                heartColor: Colors.white,
-              ),
+              child: const BeulynkLogo.icon(size: 60, heartColor: Colors.white),
             ).animate().fadeIn(duration: 600.ms).scale(),
 
             SizedBox(height: 24.h),
@@ -183,18 +180,13 @@ class _SignInPageState extends State<SignInPage> {
   Widget _buildSignInForm() {
     return Container(
       width: double.infinity,
-      constraints: BoxConstraints(
-        maxWidth: 500.w,
-      ),
+      constraints: BoxConstraints(maxWidth: 500.w),
       padding: EdgeInsets.all(32.w),
       margin: EdgeInsets.symmetric(horizontal: 24.w, vertical: 40.h),
       decoration: BoxDecoration(
         color: const Color(0xFF16213E).withOpacity(0.6),
         borderRadius: BorderRadius.circular(24.r),
-        border: Border.all(
-          color: Colors.white.withOpacity(0.1),
-          width: 1,
-        ),
+        border: Border.all(color: Colors.white.withOpacity(0.1), width: 1),
       ),
       child: Form(
         key: _formKey,
