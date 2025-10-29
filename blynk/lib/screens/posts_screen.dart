@@ -4,7 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../services/api_service.dart';
+import 'location_picker_screen.dart';
 
 class PostsScreen extends StatefulWidget {
   const PostsScreen({super.key});
@@ -243,6 +245,7 @@ class _PostsScreenState extends State<PostsScreen> {
     final titleController = TextEditingController();
     final descriptionController = TextEditingController();
     File? selectedImage;
+    LatLng? selectedLocation;
 
     showDialog(
       context: context,
@@ -281,6 +284,94 @@ class _PostsScreenState extends State<PostsScreen> {
                   ),
                 ),
                 SizedBox(height: 12.h),
+                
+                // Location selection
+                Container(
+                  padding: EdgeInsets.all(12.w),
+                  decoration: BoxDecoration(
+                    color: selectedLocation != null
+                        ? const Color(0xFF0F3460).withOpacity(0.5)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(8.r),
+                    border: Border.all(
+                      color: selectedLocation != null
+                          ? const Color(0xFFE94560)
+                          : Colors.white.withOpacity(0.3),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (selectedLocation != null) ...[
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.location_on,
+                              color: const Color(0xFFE94560),
+                              size: 16.sp,
+                            ),
+                            SizedBox(width: 8.w),
+                            Expanded(
+                              child: Text(
+                                'Lat: ${selectedLocation!.latitude.toStringAsFixed(4)}\nLng: ${selectedLocation!.longitude.toStringAsFixed(4)}',
+                                style: GoogleFonts.inter(
+                                  fontSize: 12.sp,
+                                  color: Colors.white70,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 8.h),
+                      ],
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          // Close dialog temporarily
+                          Navigator.pop(context);
+                          
+                          // Open location picker
+                          final LatLng? location = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LocationPickerScreen(
+                                initialLocation: selectedLocation,
+                              ),
+                            ),
+                          );
+                          
+                          // Reopen dialog with updated location
+                          if (location != null) {
+                            selectedLocation = location;
+                          }
+                          
+                          // Reopen the create post dialog
+                          _showCreatePostDialog();
+                          titleController.text = titleController.text;
+                          descriptionController.text = descriptionController.text;
+                        },
+                        icon: Icon(
+                          selectedLocation != null
+                              ? Icons.edit_location
+                              : Icons.add_location,
+                          size: 18.sp,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFE94560),
+                          minimumSize: Size(double.infinity, 40.h),
+                        ),
+                        label: Text(
+                          selectedLocation != null
+                              ? 'Change Location'
+                              : 'Select Location on Map',
+                          style: GoogleFonts.inter(fontSize: 14.sp),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 12.h),
+                
+                // Photo selection
                 if (selectedImage != null)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8.r),
@@ -314,10 +405,21 @@ class _PostsScreenState extends State<PostsScreen> {
             ),
             ElevatedButton(
               onPressed: () async {
+                // Validation
                 if (titleController.text.isEmpty ||
                     descriptionController.text.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Please fill all fields')),
+                    const SnackBar(content: Text('Please fill title and description')),
+                  );
+                  return;
+                }
+                
+                if (selectedLocation == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please select location on map'),
+                      backgroundColor: Colors.orange,
+                    ),
                   );
                   return;
                 }
@@ -331,6 +433,8 @@ class _PostsScreenState extends State<PostsScreen> {
                 final result = await ApiService.createPost(
                   title: titleController.text,
                   description: descriptionController.text,
+                  latitude: selectedLocation!.latitude,
+                  longitude: selectedLocation!.longitude,
                   photoPath: selectedImage?.path,
                 );
 
